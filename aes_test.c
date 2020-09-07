@@ -1,5 +1,8 @@
 #include <assert.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include "aes.h"
+#include "util.h"
 
 int main(int argc, char **argv)
 {
@@ -51,10 +54,10 @@ int main(int argc, char **argv)
                          {0xe3,0xe2,0x8d,0x48},
                          {0xbe,0x2b,0x2a,0x08}};
 
-	// uint8_t sub[4][4] =    { {0xd4,0xe0,0xb8,0x1e},
-	// 			 {0x27,0xbf,0xb4,0x41},
-	// 			 {0x11,0x98,0x5d,0x52},
-	// 			 {0xae,0xf1,0xe5,0x30}};
+	uint8_t sub[4][4] =    { {0xd4,0xe0,0xb8,0x1e},
+				 {0x27,0xbf,0xb4,0x41},
+				 {0x11,0x98,0x5d,0x52},
+				 {0xae,0xf1,0xe5,0x30}};
 
 	// uint8_t shift[4][4] =  { {0xd4, 0xe0, 0xb8, 0x1e},
 	// 			 {0xbf, 0xb4, 0x41, 0x27},
@@ -71,7 +74,17 @@ int main(int argc, char **argv)
 	// 			  {0x7f, 0x35, 0xea, 0x50},
 	// 			  {0xf2, 0x2b, 0x43, 0x49}};
 
+	//printState(state);
 	subBytes(state);
+	//printState(state);
+	int i, j;
+	for (i = 0; i < 4; i++) {
+		for (j = 0; j < 4; j++) {
+			if (state[i][j] != sub[i][j]) {
+				fprintf(stderr, "state[%d][%d] != sub[%d][%d], got 0x%02x, want 0x%02x\n", i, j, i, j, state[i][j], sub[i][j]);
+			}
+		}
+	}
 	/* Test that state == sub */
 	shiftRows(state);
 	/* Test that state == shift */

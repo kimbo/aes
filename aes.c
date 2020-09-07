@@ -43,9 +43,9 @@ uint32_t subWord(uint32_t word)
 	uint8_t byteNo;
 	for (byteNo = 0; byteNo < 4; byteNo++) {
 		uint8_t byte = (word >> (8 * byteNo) & 0xff);
-		uint8_t row = byte >> 4;
-		uint8_t col = byte & 0x0F;
-		uint8_t newByte = sbox[row][col];
+		uint8_t col = byte >> 4;
+		uint8_t row = byte & 0x0F;
+		uint8_t newByte = sbox[col][row];
 		result |= (newByte << (8 * byteNo));
 	}
 	return result;
@@ -65,12 +65,20 @@ uint32_t rotWord(uint32_t word)
 
 void mixColumns(uint8_t state[4][4])
 {
-	
+
 }
 
 void subBytes(uint8_t state[4][4])
 {
-
+	int i, j;
+	for (i = 0; i < 4; i++) {
+		for (j = 0; j < 4; j++) {
+			uint8_t byte = state[i][j];
+			uint8_t col = byte >> 4;
+			uint8_t row = byte & 0x0F;
+			state[i][j] = sbox[col][row];
+		}
+	}
 }
 
 void shiftRows(uint8_t state[4][4])
