@@ -53,7 +53,14 @@ uint32_t subWord(uint32_t word)
 
 uint32_t rotWord(uint32_t word)
 {
-	return 1;
+	uint32_t result = 0;
+	int8_t i;
+	for (i = 3; i >= 0; i--) {
+		uint8_t byte = (word >> (8 * i) & 0xff);
+		uint8_t destIdx = i == 3 ? 0 : i + 1;
+		result |= (byte << (8 * destIdx));
+	}
+	return result;
 }
 
 void mixColumns(uint8_t state[4][4])
@@ -65,14 +72,17 @@ void subBytes(uint8_t state[4][4])
 {
 
 }
+
 void shiftRows(uint8_t state[4][4])
 {
 
 }
+
 void addRoundKey(uint8_t state[4][4], uint32_t *w, uint8_t something)
 {
 
 }
+
 void cipher(uint8_t *in, uint8_t *out, uint32_t *w)
 {
 
