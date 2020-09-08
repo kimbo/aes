@@ -97,8 +97,8 @@ void mixColumns(uint8_t state[4][4])
 {
 	int col;
 	for (col = 0; col < 4; col++) {
-		uint8_t s_0 = ffMultiply(state[0][col], 0x02) ^ ffMultiply(0x03, state[1][col]) ^ state[2][col] ^ state[3][col];
-		uint8_t s_1 = state[0][col] ^ ffMultiply(state[1][col], 0x02) ^ ffMultiply(0x03, state[2][col]) ^ state[3][col];
+		uint8_t s_0 = ffMultiply(0x02, state[0][col]) ^ ffMultiply(0x03, state[1][col]) ^ state[2][col] ^ state[3][col];
+		uint8_t s_1 = state[0][col] ^ ffMultiply(0x02, state[1][col]) ^ ffMultiply(0x03, state[2][col]) ^ state[3][col];
 		uint8_t s_2 = state[0][col] ^ state[1][col] ^ ffMultiply(0x02, state[2][col]) ^ ffMultiply(0x03, state[3][col]);
 		uint8_t s_3 = ffMultiply(0x03, state[0][col]) ^ state[1][col] ^ state[2][col] ^ ffMultiply(0x02, state[3][col]);
 
