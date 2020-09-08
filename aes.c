@@ -1,4 +1,5 @@
 #include "aes.h"
+#include "util.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -63,11 +64,6 @@ uint32_t rotWord(uint32_t word)
 	return result;
 }
 
-void mixColumns(uint8_t state[4][4])
-{
-
-}
-
 void subBytes(uint8_t state[4][4])
 {
 	int i, j;
@@ -82,6 +78,22 @@ void subBytes(uint8_t state[4][4])
 }
 
 void shiftRows(uint8_t state[4][4])
+{
+	uint8_t tmp = state[1][0];
+	state[1][0] = state[1][1];
+	state[1][1] = state[1][2];
+	state[1][2] = state[1][3];
+	state[1][3] = tmp;
+
+	swap(state, 2, 0, 2, 2);
+	swap(state, 2, 1, 2, 3);
+
+	swap(state, 3, 0, 3, 3);
+	swap(state, 3, 3, 3, 1);
+	swap(state, 3, 3, 3, 2);
+}
+
+void mixColumns(uint8_t state[4][4])
 {
 
 }

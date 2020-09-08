@@ -7,7 +7,7 @@ all: aes
 
 test: aes_test
 
-aes_test: aes_test.o aes.o
+aes_test: aes_test.o aes.o util.o
 
 clean:
 	rm -f *.o aes aes_test
