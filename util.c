@@ -2,6 +2,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+uint32_t word(uint8_t i, uint8_t j, uint8_t k, uint8_t l)
+{
+	uint32_t w = 0;
+	w |= (i << (8 * 3));
+	w |= (j << (8 * 2));
+	w |= (k << (8 * 1));
+	w |= (l << (8 * 0));
+	return w;
+}
+
 void swap(uint8_t arr[4][4], uint8_t i_1, uint8_t j_1, uint8_t i_2, uint8_t j_2)
 {
 	uint8_t tmp = arr[i_1][j_1];

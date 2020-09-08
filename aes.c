@@ -1,7 +1,26 @@
-#include "aes.h"
-#include "util.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
+
+#include "aes.h"
+#include "util.h"
+
+/**
+ * AES Parameters
+ *
+ * Nb = 4
+ * number of columns in the State
+ *
+ * Nk = 4, 6, or 8
+ * number of 32-bit words in the Key
+ *
+ * Nr = 10, 12, or 14
+ * number of rounds (function of Nb and Nk)
+ */
+static int Nk = 4;
+static int Nb = 4;
+static int Nr = 10;
+
 
 uint8_t ffAdd(uint8_t ff1, uint8_t ff2)
 {
@@ -33,9 +52,25 @@ uint8_t ffMultiply(uint8_t ff1, uint8_t ff2)
 	return ans;
 }
 
-void keyExpansion(uint8_t *key, uint32_t *buf)
+void keyExpansion(uint8_t key[4*Nk], uint32_t w[Nb * (Nr + 1)])
 {
+	uint32_t tmp;
+	int i;
+	for (i = 0; i < Nk; i++) {
+		w[i] = word(key[4 * i], key[4 * i + 1], key[4 * i + 2], key[4 * i + 3]);
+	}
 
+	assert(i == Nk);
+
+	for (; i < Nb * (Nr + 1); i++) {
+		tmp = w[i - 1];
+		if (i % Nk == 0) {
+			tmp = subWord(rotWord(tmp)) ^ rcon[i / Nk];
+		} else if (Nk > 6 && i % Nk == 4) {
+			tmp = subWord(tmp);
+		}
+		w[i] = w[i - Nk] ^ tmp;
+	}
 }
 
 uint32_t subWord(uint32_t word)

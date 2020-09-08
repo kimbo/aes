@@ -41,10 +41,15 @@ int main(int argc, char **argv)
 
 	uint32_t w[44];
 	keyExpansion(key, w);
-	/* Test that w == expanded */
-	if (w[0] == expanded[0]) {
 
+	int i;
+	for (i = 0; i < 44; i++) {
+		if (w[i] != expanded[i]) {
+			fprintf(stderr, "keyExpansion(): ERROR: w[%d] != expanded[%d]. Got 0x%02x, want 0x%02x\n", i, i, w[i], expanded[i]);
+			exit(EXIT_FAILURE);
+		}
 	}
+	fprintf(stdout, "keyExpansion() succeeded\n");
 
 	/**************/
 	/*cipher tests*/
