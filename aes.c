@@ -22,7 +22,7 @@ uint8_t ffMultiply(uint8_t ff1, uint8_t ff2)
 	uint8_t prev;
 	uint8_t ans = 0;
 	uint8_t curr = ff1;
-	int mask;
+	uint16_t mask;
 	for (mask = 1; mask <= ff2; mask <<= 1) {
 		prev = curr;
 		curr = xtime(prev);
@@ -95,7 +95,18 @@ void shiftRows(uint8_t state[4][4])
 
 void mixColumns(uint8_t state[4][4])
 {
+	int col;
+	for (col = 0; col < 4; col++) {
+		uint8_t s_0 = ffMultiply(state[0][col], 0x02) ^ ffMultiply(0x03, state[1][col]) ^ state[2][col] ^ state[3][col];
+		uint8_t s_1 = state[0][col] ^ ffMultiply(state[1][col], 0x02) ^ ffMultiply(0x03, state[2][col]) ^ state[3][col];
+		uint8_t s_2 = state[0][col] ^ state[1][col] ^ ffMultiply(0x02, state[2][col]) ^ ffMultiply(0x03, state[3][col]);
+		uint8_t s_3 = ffMultiply(0x03, state[0][col]) ^ state[1][col] ^ state[2][col] ^ ffMultiply(0x02, state[3][col]);
 
+		state[0][col] = s_0;
+		state[1][col] = s_1;
+		state[2][col] = s_2;
+		state[3][col] = s_3;
+	}
 }
 
 void addRoundKey(uint8_t state[4][4], uint32_t *w, uint8_t something)
