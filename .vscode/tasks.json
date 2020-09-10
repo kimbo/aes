@@ -1,0 +1,12 @@
+{
+    "tasks": [
+        {
+            "label": "gcc build active file",
+            "type": "shell",
+            "args": [
+                "-g", "${fileDirname}/*.c", "-o", "${fileDirname}/aes"
+            ],
+            "command": "gcc",
+        }
+    ]
+}

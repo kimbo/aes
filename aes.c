@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
 
 #include "aes.h"
 #include "util.h"
@@ -17,10 +18,9 @@
  * Nr = 10, 12, or 14
  * number of rounds (function of Nb and Nk)
  */
-static int Nk = 4;
-static int Nb = 4;
-static int Nr = 10;
-
+int Nk = 4;
+int Nb = 4;
+int Nr = 10;
 
 uint8_t ffAdd(uint8_t ff1, uint8_t ff2)
 {
@@ -163,18 +163,31 @@ void addRoundKey(uint8_t state[4][4], uint32_t w[Nb * (Nr + 1)], uint8_t start)
 void cipher(uint8_t in[4 * Nb], uint8_t out[4 * Nb], uint32_t w[Nb * (Nr + 1)])
 {
 	uint8_t state[4][Nb];
+	memcpy(state, in, 16);
+	printState("input", state, 0);
+	printKeySchedule(0, w, 0);
 
-	addRoundKey(state, w, Nr);
+	// state[0][0] = out;
+
+	addRoundKey(state, w, 0);
 
 	int i;
-	for (i = 0; i < Nr - 1; i++) {
+	for (i = 1; i < Nr; i++) {
+		printState("start", state, i);
 		subBytes(state);
+		printState("s_box", state, i);
 		shiftRows(state);
+		printState("s_row", state, i);
 		mixColumns(state);
+		printState("m_col", state, i);
 		addRoundKey(state, w, i * Nb); // w[i * Nb, (i + 1) * Nb - 1]
+		printKeySchedule(i, w, i * Nb);
 	}
 
 	subBytes(state);
 	shiftRows(state);
 	addRoundKey(state, w, Nr * Nb); // w[Nr * Nb, (Nr + 1) * Nb - 1]
+
+	// printArr(state);
+	memcpy(out, state, 16);
 }
