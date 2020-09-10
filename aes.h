@@ -89,7 +89,7 @@ uint32_t rotWord(uint32_t);
 void subBytes(uint8_t state[4][4]);
 void shiftRows(uint8_t state[4][4]);
 void mixColumns(uint8_t state[4][4]);
-void addRoundKey(uint8_t state[4][4], uint32_t *w, uint8_t something);
+void addRoundKey(uint8_t state[4][4], uint32_t *w, uint8_t round);
 void cipher(uint8_t *in, uint8_t *out, uint32_t *w);
 
 /***************************/

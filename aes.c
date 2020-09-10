@@ -144,12 +144,37 @@ void mixColumns(uint8_t state[4][4])
 	}
 }
 
-void addRoundKey(uint8_t state[4][4], uint32_t *w, uint8_t something)
+void addRoundKey(uint8_t state[4][4], uint32_t w[Nb * (Nr + 1)], uint8_t start)
 {
+	int i, j;
+	for (j = 0, i = start; i < start + 4; i++, j++) {
+		uint8_t b1 = (w[i] >> (8 * 3) & 0xff);
+		uint8_t b2 = (w[i] >> (8 * 2) & 0xff);
+		uint8_t b3 = (w[i] >> (8 * 1) & 0xff);
+		uint8_t b4 = (w[i] >> (8 * 0) & 0xff);
 
+		state[0][j] ^= b1;
+		state[1][j] ^= b2;
+		state[2][j] ^= b3;
+		state[3][j] ^= b4;
+	}
 }
 
-void cipher(uint8_t *in, uint8_t *out, uint32_t *w)
+void cipher(uint8_t in[4 * Nb], uint8_t out[4 * Nb], uint32_t w[Nb * (Nr + 1)])
 {
+	uint8_t state[4][Nb];
 
+	addRoundKey(state, w, Nr);
+
+	int i;
+	for (i = 0; i < Nr - 1; i++) {
+		subBytes(state);
+		shiftRows(state);
+		mixColumns(state);
+		addRoundKey(state, w, i * Nb); // w[i * Nb, (i + 1) * Nb - 1]
+	}
+
+	subBytes(state);
+	shiftRows(state);
+	addRoundKey(state, w, Nr * Nb); // w[Nr * Nb, (Nr + 1) * Nb - 1]
 }
