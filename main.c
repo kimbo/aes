@@ -40,7 +40,11 @@ int main(int argc, char **argv)
         Nk = 8;
         break;
     default:
-        fprintf(stderr, "Key length %lu is invalid\n", strlen(key) / 2);
+        fprintf(stderr, "Key length %lu is invalid, must be 32, 48, or 64 characters\n", strlen(key));
+        exit(1);
+    }
+    if (strlen(msg) != 32) {
+        fprintf(stderr, "message length %lu is invalid, must be exactly 32 characters\n", strlen(msg));
         exit(1);
     }
     uint8_t keyBuf[keyLen];
