@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+extern const int Nb;
+
 static uint32_t rcon[] = { 0x00000000,
            0x01000000, 0x02000000, 0x04000000, 0x08000000,
            0x10000000, 0x20000000, 0x40000000, 0x80000000,
@@ -86,18 +88,19 @@ uint32_t rotWord(uint32_t);
 /* cipher function */
 /*******************/
 
-void subBytes(uint8_t state[4][4]);
-void shiftRows(uint8_t state[4][4]);
-void mixColumns(uint8_t state[4][4]);
-void addRoundKey(uint8_t state[4][4], uint32_t *w, uint8_t round);
+void subBytes(uint8_t state[4][Nb]);
+void shiftRows(uint8_t state[4][Nb]);
+void mixColumns(uint8_t state[4][Nb]);
+void addRoundKey(uint8_t state[4][Nb], uint32_t *w, uint8_t round);
 void cipher(uint8_t *in, uint8_t *out, uint32_t *w);
 
 /***************************/
 /* inverse cipher function */
 /***************************/
 
-void invSubBytes();
-void invShiftRows();
-void invMixColumns();
+void invSubBytes(uint8_t state[4][Nb]);
+void invShiftRows(uint8_t state[4][Nb]);
+void invMixColumns(uint8_t state[4][Nb]);
+void invCipher(uint8_t *in, uint8_t *out, uint32_t *w);
 
 #endif /* KIMBO_AES_H */

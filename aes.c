@@ -18,8 +18,8 @@
  * Nr = 10, 12, or 14
  * number of rounds (function of Nb and Nk)
  */
+const int Nb = 4;
 int Nk = 4;
-int Nb = 4;
 int Nr = 10;
 
 uint8_t ffAdd(uint8_t ff1, uint8_t ff2)
@@ -108,6 +108,19 @@ void subBytes(uint8_t state[4][4])
 			uint8_t col = byte >> 4;
 			uint8_t row = byte & 0x0F;
 			state[i][j] = sbox[col][row];
+		}
+	}
+}
+
+void invSubBytes(uint8_t state[4][Nb])
+{
+	int i, j;
+	for (i = 0; i < 4; i++) {
+		for (j = 0; j < 4; j++) {
+			uint8_t byte = state[i][j];
+			uint8_t col = byte >> 4;
+			uint8_t row = byte & 0x0F;
+			state[i][j] = invSbox[col][row];
 		}
 	}
 }
