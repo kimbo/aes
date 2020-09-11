@@ -141,6 +141,24 @@ void shiftRows(uint8_t state[4][4])
 	swap(state, 3, 3, 3, 2);
 }
 
+void invShiftRows(uint8_t state[4][4])
+{
+	uint8_t tmp = state[1][3];
+	state[1][3] = state[1][2];
+	state[1][2] = state[1][1];
+	state[1][1] = state[1][0];
+	state[1][0] = tmp;
+
+	swap(state, 2, 0, 2, 2);
+	swap(state, 2, 1, 2, 3);
+
+	tmp = state[3][0];
+	state[3][0] = state[3][1];
+	state[3][1] = state[3][2];
+	state[3][2] = state[3][3];
+	state[3][3] = tmp;
+}
+
 void mixColumns(uint8_t state[4][4])
 {
 	int col;
