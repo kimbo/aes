@@ -248,3 +248,45 @@ void cipher(uint8_t in[4 * Nb], uint8_t out[4 * Nb], uint32_t w[Nb * (Nr + 1)])
 		}
 	}
 }
+
+void invCipher(uint8_t in[4 * Nb], uint8_t out[4 * Nb], uint32_t w[Nb * (Nr + 1)])
+{
+	uint8_t state[4][Nb];
+	int i = 0, row, col;
+	for (col = 0; col < Nb; col++) {
+		for (row = 0; row < 4; row++) {
+			state[row][col] = in[i++];
+		}
+	}
+	printState("iinput", state, 0);
+	printKeySchedule(0, w, Nr * Nb);
+
+	addRoundKey(state, w, Nr * Nb);
+
+	for (i = Nr - 1; i > 0; i--) {
+		printState("istart", state, i);
+		invShiftRows(state);
+		printState("is_row", state, i);
+		invSubBytes(state);
+		printState("is_box", state, i);
+		addRoundKey(state, w, i * Nb);
+		printKeySchedule(i, w, i * Nb);
+		invMixColumns(state);
+		printState("im_col", state, i);
+	}
+
+	invShiftRows(state);
+	printState("is_row", state, 0);
+	invSubBytes(state);
+	printState("is_box", state, 0);
+	addRoundKey(state, w, 0);
+	printKeySchedule(i, w, 0);
+	printState("ioutput", state, 0);
+
+	i = 0;
+	for (col = 0; col < Nb; col++) {
+		for (row = 0; row < 4; row++) {
+			out[i++] = state[row][col];
+		}
+	}
+}
