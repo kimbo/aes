@@ -175,6 +175,22 @@ void mixColumns(uint8_t state[4][4])
 	}
 }
 
+void invMixColumns(uint8_t state[4][4])
+{
+	int col;
+	for (col = 0; col < 4; col++) {
+		uint8_t s_0 = ffMultiply(0x0e, state[0][col]) ^ ffMultiply(0x0b, state[1][col]) ^ ffMultiply(0x0d, state[2][col]) ^ ffMultiply(0x09, state[3][col]);
+		uint8_t s_1 = ffMultiply(0x09, state[0][col]) ^ ffMultiply(0x0e, state[1][col]) ^ ffMultiply(0x0b, state[2][col]) ^ ffMultiply(0x0d, state[3][col]);
+		uint8_t s_2 = ffMultiply(0x0d, state[0][col]) ^ ffMultiply(0x09, state[1][col]) ^ ffMultiply(0x0e, state[2][col]) ^ ffMultiply(0x0b, state[3][col]);
+		uint8_t s_3 = ffMultiply(0x0b, state[0][col]) ^ ffMultiply(0x0d, state[1][col]) ^ ffMultiply(0x09, state[2][col]) ^ ffMultiply(0x0e, state[3][col]);
+
+		state[0][col] = s_0;
+		state[1][col] = s_1;
+		state[2][col] = s_2;
+		state[3][col] = s_3;
+	}
+}
+
 void addRoundKey(uint8_t state[4][4], uint32_t w[Nb * (Nr + 1)], uint8_t start)
 {
 	int i, j;

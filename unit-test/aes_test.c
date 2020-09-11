@@ -106,6 +106,10 @@ int main(int argc, char **argv)
 
 	mixColumns(state);
 	assertEqual(state, mix, "mixColumns()");
+	invMixColumns(state);
+	assertEqual(state, shift, "invMixColumns()");
+	mixColumns(state);
+	assertEqual(state, mix, "mixColumns()");
 
 	addRoundKey(state, w, 4);
 	assertEqual(state, round, "addRoundKey()");
