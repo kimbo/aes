@@ -258,8 +258,8 @@ void invCipher(uint8_t in[4 * Nb], uint8_t out[4 * Nb], uint32_t w[Nb * (Nr + 1)
 			state[row][col] = in[i++];
 		}
 	}
-	printState("iinput", state, 0);
-	printKeySchedule(0, w, Nr * Nb);
+	printState("iinput", state, Nr);
+	printKeySchedule(Nr, w, Nr * Nb);
 
 	addRoundKey(state, w, Nr * Nb);
 
