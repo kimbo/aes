@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "aes.h"
 #include "util.h"
@@ -7,64 +8,60 @@ extern int Nk;
 extern int Nr;
 extern const int Nb;
 
+enum action {
+    ENCRYPT, DECRYPT,
+};
+
 int main(int argc, char **argv)
 {
-    uint8_t in[16] = {
-        0x00,0x11,0x22,0x33,0x44,0x55,0x66,0x77,0x88,0x99,0xaa,0xbb,0xcc,0xdd,0xee,0xff
-    };
-	uint8_t out[16];
-    uint8_t invOut[16];
-    memset(out, 0, 16);
-    memset(invOut, 0, 16);
+    if (argc != 4) {
+        fprintf(stderr, "Usage: %s <key> <decrypt/encrypt> <msg>\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+    char *key = argv[1];
+    enum action act = strcmp(argv[2], "decrypt") == 0 ? DECRYPT : ENCRYPT;
+    char *msg = argv[3];
 
-    // 128 bit key
-    Nk = 4, Nr = 10;
-    uint8_t key128[16] = {
-        0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0b,0x0c,0x0d,0x0e,0x0f
-    };
-    uint8_t cipherText128[16] = {
-        0x69,0xc4,0xe0,0xd8,0x6a,0x7b,0x04,0x30,0xd8,0xcd,0xb7,0x80,0x70,0xb4,0xc5,0x5a,
-    };
-	uint32_t w128[Nb * (Nr + 1)];
-    keyExpansion(key128, w128);
-    cipher(in, out, w128);
-    assertEqualN(out, cipherText128, 16, "cipher()");
-    invCipher(out, invOut, w128);
-    assertEqualN(invOut, in, 16, "invCipher()");
-    memset(out, 0, 16);
-    memset(invOut, 0, 16);
+    int keyLen;
+    switch(strlen(key)) {
+    case 32:
+        keyLen = 16;
+        Nr = 10;
+        Nk = 4;
+        break;
+    case 48:
+        keyLen = 24;
+        Nr = 12;
+        Nk = 6;
+        break;
+    case 64:
+        keyLen = 32;
+        Nr = 14;
+        Nk = 8;
+        break;
+    default:
+        fprintf(stderr, "Key length %lu is invalid\n", strlen(key) / 2);
+        exit(1);
+    }
+    uint8_t keyBuf[keyLen];
+    int i, j;
+    for (i = 0, j = 0; i < keyLen; i++, j += 2) {
+        sscanf(key + j, "%2x", (uint32_t *)&keyBuf[i]);
+    }
 
-    // 192 bit key
-    Nk = 6, Nr = 12;
-    uint8_t key192[24] = {
-        0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0b,0x0c,0x0d,0x0e,0x0f,0x10,0x11,0x12,0x13,0x14,0x15,0x16,0x17
-    };
-    uint8_t cipherText192[16] = {
-        0xdd,0xa9,0x7c,0xa4,0x86,0x4c,0xdf,0xe0,0x6e,0xaf,0x70,0xa0,0xec,0x0d,0x71,0x91,
-    };
-	uint32_t w192[Nb * (Nr + 1)];
-    keyExpansion(key192, w192);
-    cipher(in, out, w192);
-    assertEqualN(out, cipherText192, 16, "cipher()");
-    invCipher(out, invOut, w192);
-    assertEqualN(invOut, in, 16, "invCipher()");
-    memset(out, 0, 16);
-    memset(invOut, 0, 16);
+    uint8_t input[16];
+    memset(input, 0, 16);
+    for (i = 0, j = 0; i < 16; i++, j += 2) {
+        sscanf(msg + j, "%2x", (uint32_t *)&input[i]);
+    }
 
-    // 256 bit key
-    Nk = 8, Nr = 14;
-    uint8_t key256[32] = {
-        0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0b,0x0c,0x0d,0x0e,0x0f,0x10,0x11,0x12,0x13,0x14,0x15,0x16,0x17,0x18,0x19,0x1a,0x1b,0x1c,0x1d,0x1e,0x1f
-    };
-    uint8_t cipherText256[16] = {
-        0x8e,0xa2,0xb7,0xca,0x51,0x67,0x45,0xbf,0xea,0xfc,0x49,0x90,0x4b,0x49,0x60,0x89,
-    };
-	uint32_t w256[Nb * (Nr + 1)];
-    keyExpansion(key256, w256);
-    cipher(in, out, w256);
-    assertEqualN(out, cipherText256, 16, "cipher()");
-    invCipher(out, invOut, w256);
-    assertEqualN(invOut, in, 16, "invCipher()");
-    memset(out, 0, 16);
-    memset(invOut, 0, 16);
+    uint8_t output[16];
+    memset(output, 0, 16);
+	uint32_t w[Nb * (Nr + 1)];
+    keyExpansion(keyBuf, w);
+    if (act == ENCRYPT) {
+        cipher(input, output, w);
+    } else {
+        invCipher(input, output, w);
+    }
 }
