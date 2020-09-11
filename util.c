@@ -96,7 +96,7 @@ void arrToStr(char buf[], uint8_t arr[4][4])
 	char tmp[16];
 	for (i = 0; i < 4; i++) {
 		for (j = 0; j < 4; j++) {
-			sprintf(tmp, "%02x", arr[i][j]);
+			sprintf(tmp, "%02x", arr[j][i]);
 			strcat(buf, tmp);
 		}
 	}

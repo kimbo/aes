@@ -147,7 +147,7 @@ void mixColumns(uint8_t state[4][4])
 void addRoundKey(uint8_t state[4][4], uint32_t w[Nb * (Nr + 1)], uint8_t start)
 {
 	int i, j;
-	for (j = 0, i = start; i < start + 4; i++, j++) {
+	for (j = 0, i = start; i < start + Nb; i++, j++) {
 		uint8_t b1 = (w[i] >> (8 * 3) & 0xff);
 		uint8_t b2 = (w[i] >> (8 * 2) & 0xff);
 		uint8_t b3 = (w[i] >> (8 * 1) & 0xff);
@@ -163,15 +163,17 @@ void addRoundKey(uint8_t state[4][4], uint32_t w[Nb * (Nr + 1)], uint8_t start)
 void cipher(uint8_t in[4 * Nb], uint8_t out[4 * Nb], uint32_t w[Nb * (Nr + 1)])
 {
 	uint8_t state[4][Nb];
-	memcpy(state, in, 16);
+	int i = 0, row, col;
+	for (col = 0; col < Nb; col++) {
+		for (row = 0; row < 4; row++) {
+			state[row][col] = in[i++];
+		}
+	}
 	printState("input", state, 0);
 	printKeySchedule(0, w, 0);
 
-	// state[0][0] = out;
-
 	addRoundKey(state, w, 0);
 
-	int i;
 	for (i = 1; i < Nr; i++) {
 		printState("start", state, i);
 		subBytes(state);
@@ -185,9 +187,17 @@ void cipher(uint8_t in[4 * Nb], uint8_t out[4 * Nb], uint32_t w[Nb * (Nr + 1)])
 	}
 
 	subBytes(state);
+	printState("s_box", state, Nr);
 	shiftRows(state);
+	printState("s_row", state, Nr);
 	addRoundKey(state, w, Nr * Nb); // w[Nr * Nb, (Nr + 1) * Nb - 1]
+	printKeySchedule(Nr, w, Nr * Nb);
+	printState("output", state, Nr);
 
-	// printArr(state);
-	memcpy(out, state, 16);
+	i = 0;
+	for (col = 0; col < Nb; col++) {
+		for (row = 0; row < 4; row++) {
+			out[i++] = state[row][col];
+		}
+	}
 }
